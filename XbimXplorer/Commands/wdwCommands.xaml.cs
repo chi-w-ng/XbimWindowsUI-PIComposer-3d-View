@@ -2811,9 +2811,9 @@ namespace XbimXplorer.Commands
                 ? " [#" + propLabel + "]" 
                 : ""
                 );
-            if (pe as Xbim.Ifc2x3.Interfaces.IIfcCartesianPoint != null)
+            if (pe as Xbim.Ifc4.Interfaces.IIfcCartesianPoint != null)
             {
-                var n = pe as Xbim.Ifc2x3.Interfaces.IIfcCartesianPoint;
+                var n = pe as Xbim.Ifc4.Interfaces.IIfcCartesianPoint;
                 var vals = n.Coordinates.Select(x => x.Value);
                 ret += "\t" + string.Join("\t,\t", vals);
             }

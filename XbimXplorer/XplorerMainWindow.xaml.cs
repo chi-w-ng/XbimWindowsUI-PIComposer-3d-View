@@ -102,8 +102,8 @@ namespace XbimXplorer
             Dispatcher.BeginInvoke(new Action(delegate
             {
                 Title = string.IsNullOrEmpty(ifcFilename)
-                    ? "Xbim Xplorer" :
-                    "Xbim Xplorer - [" + ifcFilename + "]";
+                    ? "PIComposer 3dView" :
+					"PIComposer 3dView : [" + ifcFilename + "]";
             }));
         }
 
@@ -168,8 +168,9 @@ namespace XbimXplorer
 
             // initialise the logging repository
             LoggedEvents = new ObservableCollection<EventViewModel>();
-            // any logging event required should happen after XplorerMainWindow_Loaded
-        }
+			Title = "PIComposer 3dView";
+			// any logging event required should happen after XplorerMainWindow_Loaded
+		}
 
 
         public Visibility DeveloperVisible => Settings.Default.DeveloperMode 
@@ -231,12 +232,14 @@ namespace XbimXplorer
             //    Debug.WriteLine("X:{0} Y:{1} Z:{2}", pt.X, pt.Y, pt.Z);
             //}
         }
-        
-        #region "Model File Operations"
 
-        void XplorerMainWindow_Closing(object sender, CancelEventArgs e)
+		#region "Model File Operations"
+
+		public bool IsLoadingFile => _loadFileBackgroundWorker != null && _loadFileBackgroundWorker.IsBusy;
+
+		void XplorerMainWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (_loadFileBackgroundWorker != null && _loadFileBackgroundWorker.IsBusy)
+            if (IsLoadingFile)
             {
                 Logger.LogWarning("Closing cancelled because of active background task.");
                 e.Cancel = true; //do nothing if a thread is alive
@@ -407,8 +410,9 @@ namespace XbimXplorer
             var fInfo = new FileInfo(modelFileName);
             if (!fInfo.Exists) // file does not exist; do nothing
                 return;
-            if (fInfo.FullName.ToLower() == GetOpenedModelFileName()) //same file do nothing
-                return;
+			// it is ok to reload the same file
+            //if (fInfo.FullName.ToLower() == GetOpenedModelFileName()) //same file do nothing
+            //    return;
 
             // there's no going back; if it fails after this point the current file should be closed anyway
             CloseAndDeleteTemporaryFiles();
@@ -629,7 +633,7 @@ namespace XbimXplorer
         {
             try
             {
-                if (_loadFileBackgroundWorker != null && _loadFileBackgroundWorker.IsBusy)
+                if (IsLoadingFile)
                     _loadFileBackgroundWorker.CancelAsync(); //tell it to stop
                 SetOpenedModelFileName(null);
                 if (Model != null)
@@ -643,7 +647,7 @@ namespace XbimXplorer
             }
             finally
             {
-                if (!(_loadFileBackgroundWorker != null && _loadFileBackgroundWorker.IsBusy && _loadFileBackgroundWorker.CancellationPending)) //it is still busy but has been cancelled 
+                if (!(IsLoadingFile && _loadFileBackgroundWorker.CancellationPending)) //it is still busy but has been cancelled 
                 {
                     if (!string.IsNullOrWhiteSpace(_temporaryXbimFileName) && File.Exists(_temporaryXbimFileName))
                         File.Delete(_temporaryXbimFileName);
@@ -664,7 +668,7 @@ namespace XbimXplorer
 
         private void CommandBinding_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (_loadFileBackgroundWorker != null && _loadFileBackgroundWorker.IsBusy)
+            if (IsLoadingFile)
                 e.CanExecute = false;
             else
             {
