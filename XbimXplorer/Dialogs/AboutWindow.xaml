@@ -30,8 +30,8 @@
 				            </Hyperlink>
                         </TextBlock>
                         <TextBlock Margin="0,3" >
-                        <Hyperlink RequestNavigate="Link_RequestNavigate" NavigateUri="https://github.com/chi-w-ng/XbimWebUI">
-                            <TextBlock Text="https://github.com/chi-w-ng/XbimWebUI"/>
+                        <Hyperlink RequestNavigate="Link_RequestNavigate" NavigateUri="https://github.com/chi-w-ng/XbimWindowsUI-PIComposer-3d-View">
+                            <TextBlock Text="https://github.com/chi-w-ng/XbimWindowsUI-PIComposer-3d-View"/>
                         </Hyperlink>    
 </TextBlock>    
                     </StackPanel>
